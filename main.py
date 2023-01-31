@@ -19,7 +19,7 @@ def train():
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
-
+    writer = SummaryWriter("runs/coco_vqg")
     # Declare transformations (later)
     transform = transforms.Compose(
         [
@@ -61,6 +61,9 @@ def train():
 
     # Model declaration
     model = CNNtoRNN(embed_size, hidden_size, vocab_size, num_layers).to(device)
+    input_ = torch.rand(1,3,224,224)
+
+    writer.add_graph(model , input_)
     # Criterion declaration
     weight = torch.ones(vocab_size).to(device)
     weight[0] = 0 # Ignore the padding
@@ -114,17 +117,20 @@ def train():
 
             step+=1
 
-            """
+            
             if(step%250 == 0 and step!=0):
-                print(f"Step{step}/Epoch{epoch}], Loss: {step_loss/50:.4f}")
+                print(f"Step{step}/Epoch{epoch}], Loss: {step_loss/250:.4f}")
+                writer.add_scalar("Looss" , step_loss/250 , step )
                 step_loss = 0
-                eval1(model, device, dataset, "prova.jpg")
-                eval1(model, device, dataset, "prova2.jpg")
-            """
+
+            
+            
                 
 
         print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss/len(loader):.4f}")
        
+
+    writer.close()
 
 if __name__ == "__main__":
     train()
