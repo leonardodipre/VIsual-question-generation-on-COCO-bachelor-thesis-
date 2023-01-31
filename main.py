@@ -34,7 +34,7 @@ def train():
     
     
     csv = r'train_coco.csv'
-    imm_dir =r'C:\Users\leona\Desktop\COCO-dataset\coco-2014\train2014\train2014'
+    imm_dir =r'D:\Leonardo\Datasets\Coco\train2014\train2014'
 
 
     freq_threshold = 4 # 4019 vocab
@@ -53,7 +53,7 @@ def train():
     vocab_size = len(dataset.vocab)
     num_layers = 1
     learning_rate = 1e-4
-    num_epochs = 100
+    num_epochs = 20
     train_CNN = False
     load_model = False
     save_model = True
@@ -96,12 +96,7 @@ def train():
 
             imgs = imgs.to(device)
             questions = questions.to(device)
-
-            print("iterazione N." , i , "Con inde e lenghet ", index , lengths , "\n")
-            
-           
-            
-
+    
             outputs = model(imgs,questions,lengths)
 
             targets = pack_padded_sequence(questions[:, 1:], [l-1 for l in lengths], batch_first=True)[0]
