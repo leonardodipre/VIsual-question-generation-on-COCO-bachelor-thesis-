@@ -61,9 +61,7 @@ def train():
 
     # Model declaration
     model = CNNtoRNN(embed_size, hidden_size, vocab_size, num_layers).to(device)
-    input_ = torch.rand(1,3,224,224)
-
-    writer.add_graph(model , input_)
+    
     # Criterion declaration
     weight = torch.ones(vocab_size).to(device)
     weight[0] = 0 # Ignore the padding
