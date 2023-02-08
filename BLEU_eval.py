@@ -56,7 +56,7 @@ def evaluation():
                                                         #DIRECTORY#
    
     csv = r'train_coco.csv'
-    imm_dir =r'C:\Users\leona\Desktop\COCO-dataset\coco-2014\train2014\train2014'
+    imm_dir =r'D:\Leonardo\Datasets\Coco\train2014\train2014'
 
 
     freq_threshold = 4 # 4019 vocab
@@ -74,7 +74,7 @@ def evaluation():
        #Dir cartelle
     csv = "validation_coco.csv"              
     file_csv =pd.read_csv(csv)         # ID IMMAGINI
-    dir_loc = r"C:\Users\leona\Desktop\COCO-dataset\coco-2014\val2014\val2014"
+    dir_loc = imm_dir =r'D:\Leonardo\Datasets\Coco\val2014\val2014'
        
     #Carico la lista
     id_imm_list = file_csv["id"]

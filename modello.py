@@ -55,13 +55,12 @@ class CNNtoRNN(nn.Module):
 
         with torch.no_grad():
             x = self.encoderCNN(image).unsqueeze(0)
-            print(x)
-            print(x.shape)
+            
             states = x
             start_tok = self.decoderRNN.embed(torch.tensor([vocabulary.stoi["<SOS>"]]).cuda()).unsqueeze(0)
             for _ in range(max_length):
                 hiddens, states = self.decoderRNN.lstm(start_tok, states)
-                print(hidden.shape)
+                
                 hiddens = torch.cat((hiddens, x),dim=2)
                 output = self.decoderRNN.linear(hiddens.squeeze(0))
                 predicted = output.argmax(1)
