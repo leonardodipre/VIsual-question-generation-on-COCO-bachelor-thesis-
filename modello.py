@@ -25,7 +25,7 @@ class RNNdecoder(nn.Module):
         self.lstm = nn.GRU(embed_size, hidde_size, num_layers, batch_first=True)
         self.linear= nn.Linear(hidde_size*2, vocab_size) # Append image features to all hidden states
 
-        self.dropout = nn.Dropout(0.1)
+        self.dropout = nn.Dropout(0)
 
     def forward(self, features, questions, lengths):
         embeddings = self.dropout(self.embed(questions))
@@ -52,7 +52,6 @@ class CNNtoRNN(nn.Module):
         result_caption = []
         
         self.eval()
-
         with torch.no_grad():
             x = self.encoderCNN(image).unsqueeze(0)
             
@@ -62,8 +61,11 @@ class CNNtoRNN(nn.Module):
                 hiddens, states = self.decoderRNN.lstm(start_tok, states)
                 
                 hiddens = torch.cat((hiddens, x),dim=2)
+                #print(hiddens.shape)
                 output = self.decoderRNN.linear(hiddens.squeeze(0))
+                #print(output.shape)
                 predicted = output.argmax(1)
+                #print(predicted)
                 start_tok = self.decoderRNN.embed(predicted).unsqueeze(0)
 
                 if vocabulary.itos[predicted.item()] == "<EOS>":

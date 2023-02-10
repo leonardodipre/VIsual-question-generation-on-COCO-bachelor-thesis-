@@ -5,10 +5,8 @@ from  modello  import CNNtoRNN
 from dataloader import get_loader
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.transforms as transforms
-from save_model import save_checkpoint, load_checkpoint
 from tqdm import tqdm
 from torch.nn.utils.rnn import pack_padded_sequence
-import json
 from eval import eval1
 
 
@@ -33,7 +31,7 @@ def train():
                                                         #DIRECTORY#
     
     
-    csv = r'train_coco.csv'
+    csv = r'csv_file/train_coco.csv'
     imm_dir =r'D:\Leonardo\Datasets\Coco\train2014\train2014'
 
 
@@ -79,13 +77,15 @@ def train():
 
    
 
-
-
+    j = 0
+    
     for epoch in range(num_epochs):
         
-        PATH = "save_Model"
-        torch.save(model.state_dict(), PATH)
         
+        PATH = "save_Model" + str(j) 
+        print(PATH)
+        torch.save(model.state_dict(), PATH)
+        j += 1
         epoch_loss = 0
 
         step = 0 
@@ -116,16 +116,20 @@ def train():
             step+=1
 
             
-            if(step%250 == 0 and step!=0):
-                print(f"Step{step}/Epoch{epoch}], Loss: {step_loss/250:.4f}")
-                writer.add_scalar("Looss" , step_loss/250 , step )
+            if(step%150 == 0 and step!=0):
+                print(f"Step{step}/Epoch{epoch}], Loss: {step_loss/150:.4f}")
+                writer.add_scalar("Looss" , step_loss/150 , step )
+
+                with open("modelli\loss_valuesVQG_1_Final.txt", "a") as f:
+                    f.write("Epoch: " + str(epoch) + ", Loss: " + str(step_loss/150) + "\n")
+   
                 step_loss = 0
 
             
             
                 
 
-        print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss/len(loader):.4f}")
+        
        
 
     writer.close()
@@ -135,5 +139,3 @@ if __name__ == "__main__":
 
 
 
-#cacellato 
-# 524286,Is that a laptop?,COCO_train2014_000000524286.jpg

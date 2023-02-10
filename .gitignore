@@ -155,3 +155,12 @@ cython_debug/
 my_checkpoint.pth
 
 __pycache__
+
+runs
+
+Overfit_test/BLUE_overfit.py
+
+Overfit_test/main_overfit.py
+
+Overfit_test/random_sample.py
+

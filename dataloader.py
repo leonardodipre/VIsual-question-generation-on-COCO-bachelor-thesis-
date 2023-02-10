@@ -120,11 +120,6 @@ class CocoDataset(Dataset):
         
       
 
-
-
-
-
-
 class MyCollate:
     def __init__(self, pad_idx):
         self.pad_idx = pad_idx
@@ -155,8 +150,8 @@ def get_loader(
     imm_dir , 
     freq_threshold , 
     transform,
-    batch_size=64,
-    num_workers=4,
+    batch_size=32,
+    num_workers=1,
     shuffle=True,
     drop_last=True,
 ):
@@ -177,43 +172,3 @@ def get_loader(
     return loader, dataset
 
 
-
-
-csv = r'train_coco.csv'
-
-imm_dir =r'C:\Users\leona\Desktop\COCO-dataset\coco-2014\train2014\train2014'
-
-
-freq_threshold = 4 # 4019 vocab
-
-
-
-
-####################################################################################
-
-
-"""
-transform = transforms.Compose(
-        [
-            transforms.Resize((356, 356)),
-            transforms.RandomCrop((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-        ]
-    )
-
-loader, dataset = get_loader(
-        csv, imm_dir, freq_threshold, transform=transform , num_workers=2,
-        )
-
-
-
-imgs, questions, lengths, idx = dataset.__getitem__(443750)
-
-
-print(imgs)
-print(lengths)
-print(questions)
-print(idx)
-print("\n")
-"""

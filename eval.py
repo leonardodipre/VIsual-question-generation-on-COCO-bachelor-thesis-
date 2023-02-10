@@ -53,11 +53,10 @@ def eval2(model, device, dataset, dir_loc, immage_url, questions):
     
     test_img1 = transform( Image.open(os.path.join(dir_loc, immage_url)).convert('RGB')).unsqueeze(0)
     
-    prediction = " ".join(model.caption_image(test_img1.to(device), dataset.vocab)) 
+    prediction = " ".join(model.caption_image(test_img1.to(device), dataset.vocab)[:-1])+"?"
     
-    #tolgo the e aggiungo ? errore di modello 
-    pred_pad = prediction[:-4] + "?"
+   
 
-    return pred_pad, questions
+    return prediction, questions
     
     
