@@ -35,10 +35,9 @@ def eval1(model, device, dataset, immage_url):
     #test_img1 = transform( Image.open(os.path.join(dir_loc, immage_url)).convert('RGB')).unsqueeze(0)
     test_img1 = transform(Image.open( immage_url).convert('RGB')).unsqueeze(0)
     
-    print(
-        "Example 1 OUTPUT: "
-        + " ".join(model.caption_image(test_img1.to(device), dataset.vocab))
-    )
+    
+    return " ".join(model.caption_image(test_img1.to(device), dataset.vocab))
+    
 
 
 def eval2(model, device, dataset, dir_loc, immage_url, questions):
@@ -59,4 +58,21 @@ def eval2(model, device, dataset, dir_loc, immage_url, questions):
 
     return prediction, questions
     
+    
+
+def beam_search(model, device, dataset, immage_url):
+
+    transform = transforms.Compose(
+        [
+            transforms.Resize((356, 356)),
+            #transforms.RandomCrop((224, 224)),
+            transforms.ToTensor(),
+        ]
+    )
+    
+    #test_img1 = transform( Image.open(os.path.join(dir_loc, immage_url)).convert('RGB')).unsqueeze(0)
+    test_img1 = transform(Image.open( immage_url).convert('RGB')).unsqueeze(0)
+    
+    
+    model.Beam_search(test_img1.to(device), dataset.vocab, device)
     
