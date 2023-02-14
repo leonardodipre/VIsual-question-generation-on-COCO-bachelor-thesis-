@@ -95,9 +95,9 @@ def evaluation():
         
         print("IMM 1")
         a =[['is this in a museum?', 'how many animals are in the picture?', 'what kind of animal is shown?']]
-        pred =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000136.jpg")
-        #pred= beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000192.jpg")
-        print(pred)
+        #pred =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000136.jpg")
+        pred= beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000192.jpg")
+        
         
 
 

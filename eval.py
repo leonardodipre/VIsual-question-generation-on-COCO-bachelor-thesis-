@@ -74,5 +74,5 @@ def beam_search(model, device, dataset, immage_url):
     test_img1 = transform(Image.open( immage_url).convert('RGB')).unsqueeze(0)
     
     
-    model.Beam_search(test_img1.to(device), dataset.vocab, device)
+    return model.caption_image_Bean(test_img1.to(device), dataset.vocab, beam_width= 5)
     
