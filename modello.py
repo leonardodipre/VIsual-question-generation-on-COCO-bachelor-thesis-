@@ -3,6 +3,7 @@ import numpy as np
 import torch.nn as nn
 from torchvision.models import resnet18, ResNet18_Weights
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
+import torch.nn.functional as F
 
 class CNNencoder(nn.Module):
     def __init__(self, embed_size, train_CNN=False):
@@ -57,8 +58,6 @@ class CNNtoRNN(nn.Module):
 
             x = self.encoderCNN(image).unsqueeze(0)
 
-            
-
             states = x
             
             start_tok = self.decoderRNN.embed(torch.tensor([vocabulary.stoi["<SOS>"]]).cuda()).unsqueeze(0)
@@ -72,11 +71,13 @@ class CNNtoRNN(nn.Module):
                 output = self.decoderRNN.linear(hiddens.squeeze(0))
                 
                 
-               
-                predicted = output.argmax(1)
+                output = F.softmax(output, dim = 1)
+                predicted = torch.multinomial(output, num_samples=1)
                 
-                print(predicted.shape)
-                start_tok = self.decoderRNN.embed(predicted).unsqueeze(0)
+               
+            
+        
+                start_tok = self.decoderRNN.embed(predicted)
 
                 if vocabulary.itos[predicted.item()] == "<EOS>":
                     
@@ -107,7 +108,7 @@ class CNNtoRNN(nn.Module):
         hiddens = torch.cat((hiddens, x),dim=2)
         output = self.decoderRNN.linear(hiddens.squeeze(0))
                     
-                    
+        output = F.softmax(output, dim=1)
         #prendo indice 1 e collego alle sue top 5 prbs
         probs_2, indices_2 = torch.topk(output, beam_width)
 
@@ -185,7 +186,7 @@ class CNNtoRNN(nn.Module):
                     hiddens = torch.cat((hiddens, x),dim=2)
                     output = self.decoderRNN.linear(hiddens.squeeze(0))
                     
-                    
+                    output = F.softmax(output, dim=1)
                 
                     probs_in, indices_in = torch.topk(output, beam_width)
                     
@@ -227,14 +228,109 @@ class CNNtoRNN(nn.Module):
                         #print(result_caption[h][2])
                         #print( [vocabulary.itos[idx] for idx in result_caption[h][1]])
 
-                       
-                                
-                            
+
+    def top_5_multinomial(self, resul_captio_25, beam_width , x, vocabulary, resul):
+        
+
+        tmp = []
+        for _ , (token, seq , score, states) in enumerate(resul_captio_25):
+                
+
+                #print(seq)
+                
+
+                token = token.unsqueeze(0).unsqueeze(0)
+                
+                hiddens, states = self.decoderRNN.lstm(token, states)
+                
+                hiddens = torch.cat((hiddens, x),dim=2)
+               
+                output = self.decoderRNN.linear(hiddens.squeeze(0))
                 
                 
+                output = F.softmax(output, dim = 1)
+                predicted = torch.multinomial(output, num_samples=beam_width, replacement=False)
+               
+                
+                
+                for i in range(beam_width):
+                    
+                    token = self.decoderRNN.embed(predicted[0][i])
+
+                    indice = predicted[0][i].item()
+                    probabilita = output[0][indice].item()
+
+                    #print(indice)
+                    #print(probabilita)
+
+                    sequeza = seq + [indice]
+                    prob = score + probabilita
+                    
+                    if vocabulary.itos[indice]   == "<EOS>" or vocabulary.itos[indice] == "?" :
+                        resul.append([token, sequeza, prob, states])
+                        
+                    else:
+                        tmp.append([token, sequeza, prob, states])
+
+                    #print(token.shape)
+                    #print(sequeza)
+                    #print(prob)
+                    #print("")
 
 
+        tmp = sorted(tmp, key=lambda x: x[2], reverse=True)[:beam_width]
+        return tmp
+               
 
+    def beam_search_multinomial(self, image, vocabulary, beam_width ,max_length=50)  :
+        result_caption = []
+        result = []
+        self.eval()
+        with torch.no_grad():
 
+            x = self.encoderCNN(image).unsqueeze(0)
 
- 
+            states = x
+            
+            start_tok = self.decoderRNN.embed(torch.tensor([vocabulary.stoi["<SOS>"]]).cuda()).unsqueeze(0)
+            
+            hiddens, states = self.decoderRNN.lstm(start_tok, states)
+                
+            hiddens = torch.cat((hiddens, x),dim=2)
+               
+            output = self.decoderRNN.linear(hiddens.squeeze(0))
+                
+                
+            output = F.softmax(output, dim = 1)
+            predicted = torch.multinomial(output, num_samples=beam_width, replacement=False)
+            result_caption = []
+
+          
+
+            for i in range(beam_width):
+                
+                token = self.decoderRNN.embed(predicted[0][i])
+
+                indice = [predicted[0][i].item()] 
+                probabilita = output[0][indice].item()
+                result_caption.append([token, indice, probabilita, states ])        
+
+            #print("primi 5 initi token")   
+            #for i in range(len(result_caption)):
+                #print(result_caption[i][1])
+                #print(result_caption[i][2])
+
+            for i in range(10):
+                
+                tmp  = self.top_5_multinomial(result_caption, beam_width, x , vocabulary, result)
+
+                result_caption = tmp
+                
+                #for i in range(len(result_caption)):
+                    #print(result_caption[i][1])
+                    #print(result_caption[i][2])
+                    #print( [vocabulary.itos[idx] for idx in result_caption[i][1]])
+                if (result ==  beam_width):
+                    break 
+        
+        return result

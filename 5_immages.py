@@ -30,7 +30,26 @@ def blue_eval(preds_machine, target_human):
 
     return bleu_1(preds_machine, target_human).item(), bleu_2(preds_machine, target_human).item(), bleu_3(preds_machine, target_human).item(), bleu_4(preds_machine, target_human).item()
 
+def compose_topK(vocabulary, pred, top_k):
+    
+       
+        a3 = []
+        for i in range(len(pred)):     
+            pred_list = " ".join(([vocabulary.itos[idx] for idx in pred[i][1]])[:-1])+"?"
+            cost_len = pred[i][2]/len(pred_list)
 
+            a3.append([pred_list , cost_len])
+       
+        
+        a3 = sorted(a3, key=lambda x: x[1], reverse=True)[:top_k]
+
+        
+        finale = []
+        for i in range(len(a3)):
+            finale.append(a3[i][0])  
+
+        return finale   
+    
 
 def evaluation():
     
@@ -93,61 +112,55 @@ def evaluation():
 
         model.eval()
         
+        vocabulary = dataset_vocab.vocab
+
         print("IMM 1")
-        a =[['is this in a museum?', 'how many animals are in the picture?', 'what kind of animal is shown?']]
-        #pred =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000136.jpg")
-        pred= beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000192.jpg")
-        
-        
+        human =[['is this in a museum?', 'how many animals are in the picture?', 'what kind of animal is shown?']]
+        pred =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000136.jpg")
+        print(human)
+        pre_list = compose_topK(vocabulary, pred, 5)
+        print(pre_list)
+        print(blue_eval(pre_list, human))
+        pred=[]
+       
 
-
-        """
-        print("IMM 1")
-        a =[['is this in a museum?', 'how many animals are in the picture?', 'what kind of animal is shown?']]
-        pred =eval1(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000136.jpg")
-        print(a)
-        print(pred)
-        pred_ = [pred]
-
-        print(blue_eval(pred_, a))
-        print("\n")
-
-        
+    
         print("IMM 2")
-        a = [['what sport is being played?', 'is the catcher wearing safety gear?', 'what is the name of the teams?']]
-        pred= eval1(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000192.jpg")
-        print(a)
-        print(pred)
-        pred_ = [pred]
-        print(blue_eval(pred_, a))
-        print("\n")
+        human = [['what sport is being played?', 'is the catcher wearing safety gear?', 'what is the name of the teams?']]
+        pred= beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000192.jpg")
+        print(human)
+        pre_list = compose_topK(vocabulary, pred, 5)
+        print(pre_list)
+        print(blue_eval(pre_list, human))
+        
+       
 
         print("IMM 3")
-        a = [['what color is the car on the far right?', 'is there an ice cream truck?', 'is it daytime?', 'is the dog real?', 'what shoe company is advertised?', 'what color is the truck?']]
-        pred = eval1(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000257.jpg")
-        print(a)
-        print(pred)
-        pred_ = [pred]
-        print(blue_eval(pred_, a))
+        human= [['what color is the car on the far right?', 'is there an ice cream truck?', 'is it daytime?', 'is the dog real?', 'what shoe company is advertised?', 'what color is the truck?']]
+        pred = beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000257.jpg")
+        print(human)
+        pre_list = compose_topK(vocabulary, pred, 5)
+        print(pre_list)
+        print(blue_eval(pre_list, human))
         print("\n")
 
         print("IMM 4")
-        a = [['is the horse wearing something on its ankles?', 'how many horses are there?', 'is the woman riding english or western saddle?', 'is this in color or black and white?', 'what type of pants is the rider wearing?', 'is this a full grown horse?', 'is the woman wearing a long sleeve, short sleeve, or sleeveless blouse?', 'is one horse riderless?', 'is this horse wearing a saddle?']]
-        pred = eval1(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000003209.jpg")
-        print(a)
-        print(pred)
-        pred_ = [pred]
-        print(blue_eval(pred_, a))
+        human = [['is the horse wearing something on its ankles?', 'how many horses are there?', 'is the woman riding english or western saddle?', 'is this in color or black and white?', 'what type of pants is the rider wearing?', 'is this a full grown horse?', 'is the woman wearing a long sleeve, short sleeve, or sleeveless blouse?', 'is one horse riderless?', 'is this horse wearing a saddle?']]
+        pred = beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000003209.jpg")
+        print(human)
+        pre_list = compose_topK(vocabulary, pred, 5)
+        print(pre_list)
+        print(blue_eval(pre_list, human))
         print("\n")
 
         print("IMM 5")
-        a = [['are there a lot of cars parked on the street?', 'what is cast?', 'what is parked beside the curb?']]
-        pred =eval1(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000285742.jpg")
-        print(a)
-        print(pred)
-        pred_ = [pred]
-        print(blue_eval(pred_, a))
+        human = [['are there a lot of cars parked on the street?', 'what is cast?', 'what is parked beside the curb?']]
+        pred =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000285742.jpg")
+        print(human)
+        pre_list = compose_topK(vocabulary, pred, 5)
+        print(pre_list)
+        print(blue_eval(pre_list, human))
         print("\n")
-        """
+     
 if __name__ == "__main__":
     evaluation()

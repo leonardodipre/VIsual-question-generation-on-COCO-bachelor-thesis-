@@ -158,7 +158,7 @@ def evaluation():
         BLEU_tot3 += BL3/l
         BLEU_tot4 += BL4/l
 
-        with open("BLUE.txt", "a") as f:
+        with open("BLUE_multinomial.txt", "a") as f:
             f.write("Epoch: " + str(j) + ", BLUE:1: " + str(BL1/l) + ", BLUE_2: " + str(BL2/l) + ", BLUE_3: " + str(BL3/l) + ", BLUE_4: " + str(BL4/l) + "\n")
 
 if __name__ == "__main__":

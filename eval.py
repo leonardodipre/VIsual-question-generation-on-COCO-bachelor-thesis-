@@ -35,9 +35,9 @@ def eval1(model, device, dataset, immage_url):
     #test_img1 = transform( Image.open(os.path.join(dir_loc, immage_url)).convert('RGB')).unsqueeze(0)
     test_img1 = transform(Image.open( immage_url).convert('RGB')).unsqueeze(0)
     
-    
-    return " ".join(model.caption_image(test_img1.to(device), dataset.vocab))
-    
+   
+        
+    return  " ".join(model.caption_image(test_img1.to(device), dataset.vocab)[:-1])+"?"
 
 
 def eval2(model, device, dataset, dir_loc, immage_url, questions):
@@ -74,5 +74,5 @@ def beam_search(model, device, dataset, immage_url):
     test_img1 = transform(Image.open( immage_url).convert('RGB')).unsqueeze(0)
     
     
-    return model.caption_image_Bean(test_img1.to(device), dataset.vocab, beam_width= 2)
+    return model.beam_search_multinomial(test_img1.to(device), dataset.vocab, beam_width= 5)
     
