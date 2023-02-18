@@ -5,8 +5,8 @@ from dataloader import get_loader
 import torchvision.transforms as transforms
 import json
 from torchmetrics import BLEUScore
-from eval import eval2
-from eval import eval1
+
+from eval import eval1, beam_search, eval2
 from  modello  import CNNtoRNN
 
 import torchvision.transforms as transforms
@@ -30,6 +30,25 @@ def blue_eval(preds_machine, target_human):
 
     return bleu_1(preds_machine, target_human).item(), bleu_2(preds_machine, target_human).item(), bleu_3(preds_machine, target_human).item(), bleu_4(preds_machine, target_human).item()
 
+def compose_topK(vocabulary, pred, top_k):
+    
+       
+        a3 = []
+        for i in range(len(pred)):     
+            pred_list = " ".join(([vocabulary.itos[idx] for idx in pred[i][1]])[:-1])+"?"
+            cost_len = pred[i][2]/len(pred_list)
+
+            a3.append([pred_list , cost_len])
+       
+        
+        a3 = sorted(a3, key=lambda x: x[1], reverse=True)[:top_k]
+
+        
+        finale = []
+        for i in range(len(a3)):
+            finale.append(a3[i][0])  
+
+        return finale 
 
 
 def evaluation():
@@ -99,7 +118,7 @@ def evaluation():
         # Model declaration
     model = CNNtoRNN(embed_size, hidden_size, vocab_size, num_layers).to(device)
 
-    for j in range(0,20):
+    for j in range(0,1):
         
         PATH = r"D:\Leonardo\VQG_final\modelli\save_Model" + str(j)
         print("Read ", PATH)
@@ -111,8 +130,21 @@ def evaluation():
         BL2 = 0
         BL3 = 0
         BL4 = 0
+        dim = int(len(id_imm_list)/4)
 
-        for i in range(len(id_imm_list)):
+        print(dim)
+        
+        for i in range(dim):
+            
+            #human generarted
+            
+            
+            immage_url = dir_loc+"/" +"".join(cocolist[i])
+         
+            prediction = beam_search(model,device, dataset_vocab, immage_url )
+            
+            pre_list_beam = compose_topK(dataset_vocab.vocab, prediction, 5)
+            
             list_ = []
             for original_string in questions_list[i].split(','):
                 
@@ -126,15 +158,12 @@ def evaluation():
                 #print("Strig " , new_string) 
                 list_ +=[new_string]
 
-            prediction, question = eval2(model,device, dataset_vocab, dir_loc, cocolist[i], list_ )
+            human=  [list_]
 
             
-            question = [list_]
-            pre_parantesist = [prediction]
-
-
-
-            bl1, bl2, bl3, bl4 = blue_eval(pre_parantesist, question)
+            bl1, bl2, bl3, bl4 = blue_eval(pre_list_beam, human)
+            
+            
             
             
             BL1 += bl1
@@ -142,7 +171,8 @@ def evaluation():
             BL3 += bl3
             BL4 += bl4
 
-            if(i%100 == 0):
+            if(i%100 == 0 and i != 0):
+                print(" ", BL1/i, BL2/i, BL3/i, BL4/i)
                 print(i)
 
         l = len(id_imm_list)
@@ -158,8 +188,10 @@ def evaluation():
         BLEU_tot3 += BL3/l
         BLEU_tot4 += BL4/l
 
-        with open("BLUE_multinomial.txt", "a") as f:
-            f.write("Epoch: " + str(j) + ", BLUE:1: " + str(BL1/l) + ", BLUE_2: " + str(BL2/l) + ", BLUE_3: " + str(BL3/l) + ", BLUE_4: " + str(BL4/l) + "\n")
+        with open("BLUE_beam_search.txt", "a") as f:
+            f.write( "e" + str(j) +","+ str(BL1/dim) +","+   str(BL2/dim) +","+ str(BL3/dim) +","+ str(BL4/dim) + "\n")
+
+        
 
 if __name__ == "__main__":
     evaluation()

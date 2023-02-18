@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 import json
 from torchmetrics import BLEUScore
 
-from eval import eval1 , beam_search , eval2 
+from eval import beam_search , eval_gredy
 from  modello  import CNNtoRNN
 
 import torchvision.transforms as transforms
@@ -115,52 +115,120 @@ def evaluation():
         vocabulary = dataset_vocab.vocab
 
         print("IMM 1")
-        human =[['is this in a museum?', 'how many animals are in the picture?', 'what kind of animal is shown?']]
-        pred =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000136.jpg")
-        print(human)
-        pre_list = compose_topK(vocabulary, pred, 5)
-        print(pre_list)
-        print(blue_eval(pre_list, human))
-        pred=[]
-       
 
-    
-        print("IMM 2")
-        human = [['what sport is being played?', 'is the catcher wearing safety gear?', 'what is the name of the teams?']]
-        pred= beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000192.jpg")
+        human =[['is this in a museum?', 'how many animals are in the picture?', 'what kind of animal is shown?']]
+        print("Human annotated question")
         print(human)
-        pre_list = compose_topK(vocabulary, pred, 5)
-        print(pre_list)
-        print(blue_eval(pre_list, human))
+        pred_beam =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000136.jpg")
+        pred_gredy = eval_gredy(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000136.jpg")
+
+        pre_list_beam = compose_topK(vocabulary, pred_beam, 5)
         
-       
+        print("\nGredy search question machine")
+        pred_gredy= [pred_gredy]
+        print(pred_gredy)
+        print("\nBeam search question machine")
+        print(pre_list_beam)
+        
+        print("\nBeamSearch", blue_eval(pre_list_beam, human))
+        print("\nGredy_search", blue_eval(pred_gredy, human))
+
+        pred=[]
+        print("\n\n")
+
+
+        print("IMM 2")
+
+        human = [['what sport is being played?', 'is the catcher wearing safety gear?', 'what is the name of the teams?']]
+        print("Human annotated question")
+        print(human)
+        pred_beam =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000192.jpg")
+        pred_gredy = eval_gredy(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000192.jpg")
+
+        pre_list_beam = compose_topK(vocabulary, pred_beam, 5)
+        
+        print("\nGredy search question machine")
+        pred_gredy= [pred_gredy]
+        print(pred_gredy)
+        print("\nBeam search question machine")
+        print(pre_list_beam)
+        
+        print("\nBeamSearch", blue_eval(pre_list_beam, human))
+        print("\nGredy_search", blue_eval(pred_gredy, human))
+
+        pred=[]
+        print("\n\n")
+
 
         print("IMM 3")
+
         human= [['what color is the car on the far right?', 'is there an ice cream truck?', 'is it daytime?', 'is the dog real?', 'what shoe company is advertised?', 'what color is the truck?']]
-        pred = beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000257.jpg")
+        print("Human annotated question")
         print(human)
-        pre_list = compose_topK(vocabulary, pred, 5)
-        print(pre_list)
-        print(blue_eval(pre_list, human))
-        print("\n")
+        pred_beam =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000257.jpg")
+        pred_gredy = eval_gredy(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000000257.jpg")
+
+        pre_list_beam = compose_topK(vocabulary, pred_beam, 5)
+        
+        print("\nGredy search question machine")
+        pred_gredy= [pred_gredy]
+        print(pred_gredy)
+        print("\nBeam search question machine")
+        print(pre_list_beam)
+        
+        print("\nBeamSearch", blue_eval(pre_list_beam, human))
+        print("\nGredy_search", blue_eval(pred_gredy, human))
+
+        pred=[]
+        print("\n\n")
+
 
         print("IMM 4")
+
         human = [['is the horse wearing something on its ankles?', 'how many horses are there?', 'is the woman riding english or western saddle?', 'is this in color or black and white?', 'what type of pants is the rider wearing?', 'is this a full grown horse?', 'is the woman wearing a long sleeve, short sleeve, or sleeveless blouse?', 'is one horse riderless?', 'is this horse wearing a saddle?']]
-        pred = beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000003209.jpg")
+        print("Human annotated question")
         print(human)
-        pre_list = compose_topK(vocabulary, pred, 5)
-        print(pre_list)
-        print(blue_eval(pre_list, human))
-        print("\n")
+        pred_beam =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000003209.jpg")
+        pred_gredy = eval_gredy(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000003209.jpg")
+
+        pre_list_beam = compose_topK(vocabulary, pred_beam, 5)
+        
+        print("\nGredy search question machine")
+        pred_gredy= [pred_gredy]
+        print(pred_gredy)
+        print("\nBeam search question machine")
+        print(pre_list_beam)
+        
+        print("\nBeamSearch", blue_eval(pre_list_beam, human))
+        print("\nGredy_search", blue_eval(pred_gredy, human))
+        pred=[]
+        print("\n\n")
+
+
+
 
         print("IMM 5")
         human = [['are there a lot of cars parked on the street?', 'what is cast?', 'what is parked beside the curb?']]
-        pred =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000285742.jpg")
+        print("Human annotated question")
         print(human)
-        pre_list = compose_topK(vocabulary, pred, 5)
-        print(pre_list)
-        print(blue_eval(pre_list, human))
-        print("\n")
-     
+        pred_beam =beam_search(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000285742.jpg")
+        pred_gredy = eval_gredy(model, device, dataset_vocab, "D:\Leonardo\VQG_final\immagini5\COCO_val2014_000000285742.jpg")
+
+        pre_list_beam = compose_topK(vocabulary, pred_beam, 5)
+        
+        print("\nGredy search question machine")
+        pred_gredy= [pred_gredy]
+        print(pred_gredy)
+        print("\nBeam search question machine")
+        print(pre_list_beam)
+        
+        print("\nBeamSearch", blue_eval(pre_list_beam, human))
+        print("\nGredy_search", blue_eval(pred_gredy, human))
+
+        pred=[]
+        print("\n\n")
+
+      
+
 if __name__ == "__main__":
     evaluation()

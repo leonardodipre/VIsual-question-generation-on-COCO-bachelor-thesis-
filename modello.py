@@ -50,7 +50,34 @@ class CNNtoRNN(nn.Module):
         outputs = self.decoderRNN(features, captions, lengths)
         return outputs
 
-    def caption_image(self, image, vocabulary, max_length=50):
+    
+    def caption_image_gredy(self, image, vocabulary, max_length=50):
+        result_caption = []
+        
+        self.eval()
+
+        with torch.no_grad():
+            x = self.encoderCNN(image).unsqueeze(0)
+            
+            states = x
+            start_tok = self.decoderRNN.embed(torch.tensor([vocabulary.stoi["<SOS>"]]).cuda()).unsqueeze(0)
+            for _ in range(max_length):
+                hiddens, states = self.decoderRNN.lstm(start_tok, states)
+                
+                hiddens = torch.cat((hiddens, x),dim=2)
+                output = self.decoderRNN.linear(hiddens.squeeze(0))
+                predicted = output.argmax(1)
+                start_tok = self.decoderRNN.embed(predicted).unsqueeze(0)
+
+                if vocabulary.itos[predicted.item()] == "<EOS>":
+                    break
+
+                result_caption.append(predicted.item())
+
+        return [vocabulary.itos[idx] for idx in result_caption]
+
+
+    def caption_image_multinomial(self, image, vocabulary, max_length=50):
         result_caption = []
         
         self.eval()
@@ -90,143 +117,6 @@ class CNNtoRNN(nn.Module):
 
         return [vocabulary.itos[idx] for idx in result_caption]
 
-
-    def top_5_beam(self ,x , states , probs_in, indices_in, beam_width , sequence, score, device , vocabulary,  result):
-
-        #input 1 probs e un indice
-        tmp_caption = []
-       
-        indec = torch.tensor([indices_in.item()]).to(device)
-
-        start_tok = self.decoderRNN.embed(indec).unsqueeze(0)
-
-        previus_label = sequence + [indices_in.item()]
-        previus_score = score + probs_in.item()
-
-       
-        hiddens, states = self.decoderRNN.lstm(start_tok, states)
-        hiddens = torch.cat((hiddens, x),dim=2)
-        output = self.decoderRNN.linear(hiddens.squeeze(0))
-                    
-        output = F.softmax(output, dim=1)
-        #prendo indice 1 e collego alle sue top 5 prbs
-        probs_2, indices_2 = torch.topk(output, beam_width)
-
-        #print("Indici nuove ", indices_2)
-
-
-        for j in range(beam_width):
-                            
-           
-
-            indec = torch.tensor([indices_2[0][j].item()]).to(device)
-            start_tok = self.decoderRNN.embed(indec).unsqueeze(0)
-
-            label = previus_label + [indices_2[0][j].item()]
-            
-           
-            #print( [vocabulary.itos[idx] for idx in label])
-            sum_prob = probs_2[0][j].item() + previus_score
-
-            #print("New label", label)
-            #print( [vocabulary.itos[idx] for idx in label])
-            #print("New score", sum_prob)
-           
-            
-
-            if vocabulary.itos[indec.item()] == "<EOS>":
-
-                tmp_caption.append([start_tok , sequence , sum_prob])
-
-                result.append([vocabulary.itos[idx] for idx in sequence])
-                
-                            
-            else:
-
-                tmp_caption.append([start_tok , label , sum_prob])
-
-
-            
-        return tmp_caption 
-
-
-    def caption_image_Bean(self, image, vocabulary, beam_width, max_length=50):
-        
-        num_iter = 0
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-        #inserisco i risultati qunado trovo un <eos>
-        result = []
-        eos = 0
-
-        self.eval()
-        with torch.no_grad():
-
-            x = self.encoderCNN(image).unsqueeze(0)
-            states = x
-            start_tok = self.decoderRNN.embed(torch.tensor([vocabulary.stoi["<SOS>"]]).cuda()).unsqueeze(0)
-            
-            #inserisco statok, no vocabili e punteggio 0.0
-            result_caption = [[start_tok, [] , 0.0]]
-
-            for _ in range(50):
-
-                for k , (token, sequence, score) in enumerate(result_caption):
-
-                    """ 
-                    print(len(result_caption))
-                    
-                    print("Risultati")
-                    for u in range(len(result)):
-                        print(result[u])
-                    """
-        
-
-                    hiddens, states = self.decoderRNN.lstm(token, states)
-                    hiddens = torch.cat((hiddens, x),dim=2)
-                    output = self.decoderRNN.linear(hiddens.squeeze(0))
-                    
-                    output = F.softmax(output, dim=1)
-                
-                    probs_in, indices_in = torch.topk(output, beam_width)
-                    
-                    tmp= []
-
-                    for j in range(beam_width):
-                        
-                        tmp_1 = self.top_5_beam(x , states,  probs_in[0][j], indices_in[0][j], beam_width , sequence, score, device, vocabulary , result)
-                       
-                        if len(result)== beam_width:
-                            exit()
-
-                        for i in range(len(tmp_1)):
-                            tmp.append([tmp_1[i][0], tmp_1[i][1], tmp_1[i][2]])
-
-                    print("Iter k j", k , j)
-                    for y in range(len(tmp)):
-                        print(tmp[y][1])
-                        print(tmp[y][2])
-                        print( [vocabulary.itos[idx] for idx in tmp[y][1]])
-
-                    print("\n\n")
-
-                    tmp = sorted(tmp, key=lambda x: x[2], reverse=True)[:beam_width]
-                    
-                    print("TOP ")
-                    for y in range(len(tmp)):
-                        print(tmp[y][1])
-                        print(tmp[y][2])
-                        print( [vocabulary.itos[idx] for idx in tmp[y][1]])
-
-                    print()
-
-
-                    result_caption = tmp
-                    for h in range(len(result_caption)):
-                        a=1
-                        #print(result_caption[h][1])
-                        #print(result_caption[h][2])
-                        #print( [vocabulary.itos[idx] for idx in result_caption[h][1]])
 
 
     def top_5_multinomial(self, resul_captio_25, beam_width , x, vocabulary, resul):

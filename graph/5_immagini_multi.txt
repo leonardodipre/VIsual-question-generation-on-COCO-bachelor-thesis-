@@ -1,0 +1,76 @@
+IMM 1
+Human annotated question
+[['is this in a museum?', 'how many animals are in the picture?', 'what kind of animal is shown?']]
+
+Gredy search question machine
+['what is the giraffe eating?']
+
+Beam search question machine
+['where is the giraffe?', 'how many giraffes are there?', 'how many giraffes are in the picture?', 'how many giraffe are in the picture?', 'how many giraffes are in the photo?']
+
+BeamSearch (0.3894003927707672, 0.0, 0.0, 0.0)
+
+Gredy_search (0.6000000238418579, 0.0, 0.0, 0.0)
+
+
+
+IMM 2
+Human annotated question
+[['what sport is being played?', 'is the catcher wearing safety gear?', 'what is the name of the teams?']]
+
+Gredy search question machine
+['what is the man holding?']
+
+Beam search question machine
+["what number is on the batter 's shirt?", "what number is on the player 's shirt?", "what number is on the batter 's jersey?", "what number is on the batter 's helmet?", 'what number is on the jersey?']
+BeamSearch (0.375, 0.0, 0.0, 0.0)
+
+Gredy_search (0.6000000238418579, 0.6000000238418579, 0.56462162733078, 0.0)
+
+
+
+IMM 3
+Human annotated question
+[['what color is the car on the far right?', 'is there an ice cream truck?', 'is it daytime?', 'is the dog real?', 'what shoe company is advertised?', 'what color is the truck?']]
+
+Gredy search question machine
+['what is the man riding?']
+
+Beam search question machine
+['what color is the bus?', 'what color is the bike?', 'what color is the photo?', 'how many people are in the picture?', 'how many people are in the photo?']
+
+BeamSearch (0.800000011920929, 0.800000011920929, 0.7829735279083252, 0.7521206140518188)
+
+Gredy_search (0.6000000238418579, 0.4898979663848877, 0.0, 0.0)
+
+
+
+IMM 4
+Human annotated question
+[['is the horse wearing something on its ankles?', 'how many horses are there?', 'is the woman riding english or western saddle?', 'is this in color or black and white?', 'what type of pants is the rider wearing?', 'is this a full grown horse?', 'is the woman wearing a long sleeve, short sleeve, or sleeveless blouse?', 'is one horse riderless?', 'is this horse wearing a saddle?']]
+
+Gredy search question machine
+['what is the horse doing?']
+
+Beam search question machine
+['how many horses are there?', 'how many horses are in the photo?', 'how many horses are in the picture?', 'how many horses are in the image?', 'how many horses are shown?']
+
+BeamSearch (1.0, 1.0, 1.0, 1.0)
+
+Gredy_search (0.800000011920929, 0.6928203701972961, 0.6214464902877808, 0.0)
+
+
+
+IMM 5
+Human annotated question
+[['are there a lot of cars parked on the street?', 'what is cast?', 'what is parked beside the curb?']]
+
+Gredy search question machine
+['is this a busy street?']
+
+Beam search question machine
+['how many cars are in the picture?', 'how many cars are there?', 'how many cars are in the photo?', 'was this picture taken in the city?', 'how many stories is the bus?']
+
+BeamSearch (0.4285714328289032, 0.0, 0.0, 0.0)
+
+Gredy_search (0.49123844504356384, 0.0, 0.0, 0.0)
