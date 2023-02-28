@@ -5,7 +5,7 @@ import numpy
 
 # Carica il file CSV in un DataFrame di Pandas
 
-df = pd.read_csv(r'D:\Leonardo\VQG_final\modelli\graph\beam_search\BLUE_beam_search.csv')
+df = pd.read_csv(r'D:\Leonardo\VQG_final\modelli\BLUE_multinomial.csv')
 
 
 # Estrae i valori numerici dalle stringhe delle colonne 'Epoch' e 'Loss'
@@ -17,14 +17,14 @@ BLEU4 = df['BLEU4']
 
 
 
-plt.plot(epochs.astype(str), BLEU1, label="BLUE1")
+plt.plot(epochs.astype(str), BLEU1, label="BLEU1")
 
-plt.plot(epochs.astype(str), BLEU2, label="BLUE2")
+plt.plot(epochs.astype(str), BLEU2, label="BLEU2")
 
-plt.plot(epochs.astype(str), BLEU3, label="BLUE3")
+plt.plot(epochs.astype(str), BLEU3, label="BLEU3")
 
 
-plt.plot(epochs.astype(str), BLEU4, label="BLUE4")
+plt.plot(epochs.astype(str), BLEU4, label="BLEU4")
 
 plt.legend()
 
@@ -34,4 +34,4 @@ plt.xlabel('model')
 
 
 # Mostra il grafico
-plt.savefig('BLEU_total_beam_search.png')
+plt.savefig('BLEU_total_multinomial.png')
